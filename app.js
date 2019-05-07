@@ -7,8 +7,13 @@ var cookieParser = require('cookie-parser');
 var client_id = '959f2e87abe940319839a08aa08adbd4'; // Your client id
 var client_secret = 'c0b7b72a7274442cb3d8ad563fd19e7a'; // Your secret
 
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
-var redirect_uri = 'http://playlistartwork.herokuapp.com/callback';
+const base = process.env.HEROKU_APP_NAME || null;
+if (base === null) {
+	var redirect_uri = 'http://localhost:8888/callback';
+} else {
+	var redirect_uri = `https://${process.env.HEROKU_APP_NAME}.herokuapp.com/callback`;
+}
+console.log(redirect_uri);
 
 var url = require('url');
 const { createCanvas, loadImage, Image } = require('canvas');
@@ -345,6 +350,6 @@ app.get('/generate', function(req, res, body) {
 	});
 });
 
-port = process.env.PORT || 8888;
+const port = process.env.PORT || 8888;
 console.log('Listening on',port);
 app.listen(port);
