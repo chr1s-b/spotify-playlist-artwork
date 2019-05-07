@@ -1,0 +1,16 @@
+{
+  "author": "",
+  "name": "",
+  "description": "",
+  "version": "0.0.2",
+  "dependencies": {
+    "canvas": "^2.4.1",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.4",
+    "express": "~4.16.0",
+    "pixl-request": "^1.0.25",
+    "querystring": "~0.2.0",
+    "request": "~2.83.0"
+  },
+  "start": "node app.js"
+}
