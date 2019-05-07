@@ -1,1 +1,1 @@
-"# spotify-playlist-artwork" 
+# spotify-playlist-artwork 
