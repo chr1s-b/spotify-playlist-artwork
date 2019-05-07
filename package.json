@@ -12,5 +12,7 @@
     "querystring": "~0.2.0",
     "request": "~2.83.0"
   },
-  "start": "node app.js"
+  "scripts": {
+	"start": "node app.js"
+  }
 }
