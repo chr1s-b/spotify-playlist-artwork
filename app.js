@@ -152,17 +152,17 @@ app.get("/dashboard", function(req, res, body) {
 	request.get(options, function(error, response, body) {
 		console.log(body);
 		body.items.forEach(function(item) {
-			res.write("<a href="/generate?"+
+			res.write("<a href=\"/generate?"+
 			querystring.stringify({
 				token: access_token,
 				user: user_id,
 				playlist_id: item.id,
 				playlist_name: item.name
-			})+"" >");
+			})+"\" >");
 			res.write(item.name+"<br/>");
 			var img_url = item.images[0].url;
-			res.write("<img width="100px" height="100px" src=""+
-						img_url+"" /><br/>");
+			res.write("<img width=\"100px\" height=\"100px\" src=\""+
+						img_url+"\" /><br/>");
 			res.write(item.tracks.total+" tracks<br/>");
 			res.write("</a>-----<br/>");
 		});
@@ -335,7 +335,7 @@ app.get("/generate", function(req, res, body) {
 		
 		fit_vals(url_freq,sq_side,sq_side,w,h).then(im => {
 			var imdata = im.toDataURL("image/jpeg");
-			res.write("<img id="output" src="" + imdata + "" />")
+			res.write("<img id=\"output\" src=\"" + imdata + "\" />")
 			console.log("finished");
 			res.end("<br/>END<br/>");
 		});
