@@ -7,8 +7,8 @@ var cookieParser = require("cookie-parser");
 var client_id = "959f2e87abe940319839a08aa08adbd4"; // Your client id
 var client_secret = "c0b7b72a7274442cb3d8ad563fd19e7a"; // Your secret
 
-var redirect_uri = "http://localhost:8888/callback"; // Your redirect uri
-//var redirect_uri = "http://playlistartwork.herokuapp.com/callback";
+//var redirect_uri = "http://localhost:8888/callback"; // Your redirect uri
+var redirect_uri = "http://playlistartwork.herokuapp.com/callback";
 
 var url = require("url");
 const { createCanvas, loadImage, Image } = require("canvas");
