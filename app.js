@@ -1,18 +1,18 @@
-var express = require('express'); // Express web server framework
-var request = require('request'); // "Request" library
-var cors = require('cors');
-var querystring = require('querystring');
-var cookieParser = require('cookie-parser');
+var express = require("express"); // Express web server framework
+var request = require("request"); // "Request" library
+var cors = require("cors");
+var querystring = require("querystring");
+var cookieParser = require("cookie-parser");
 
-var client_id = '959f2e87abe940319839a08aa08adbd4'; // Your client id
-var client_secret = 'c0b7b72a7274442cb3d8ad563fd19e7a'; // Your secret
+var client_id = "959f2e87abe940319839a08aa08adbd4"; // Your client id
+var client_secret = "c0b7b72a7274442cb3d8ad563fd19e7a"; // Your secret
 
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
-var redirect_uri = 'http://playlistartwork.herokuapp.com/callback';
+var redirect_uri = "http://localhost:8888/callback"; // Your redirect uri
+//var redirect_uri = "http://playlistartwork.herokuapp.com/callback";
 
-var url = require('url');
-const { createCanvas, loadImage, Image } = require('canvas');
-var Request = require('pixl-request');
+var url = require("url");
+const { createCanvas, loadImage, Image } = require("canvas");
+var Request = require("pixl-request");
 
 /**
  * Generates a random string containing numbers and letters
@@ -20,8 +20,8 @@ var Request = require('pixl-request');
  * @return {string} The generated string
  */
 var generateRandomString = function(length) {
-  var text = '';
-  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   for (var i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
@@ -29,24 +29,24 @@ var generateRandomString = function(length) {
   return text;
 };
 
-var stateKey = 'spotify_auth_state';
+var stateKey = "spotify_auth_state";
 
 var app = express();
 
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + "/public"))
    .use(cors())
    .use(cookieParser());
 
-app.get('/login', function(req, res) {
+app.get("/login", function(req, res) {
 
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email playlist-read-private';
-  res.redirect('https://accounts.spotify.com/authorize?' +
+  var scope = "user-read-private user-read-email playlist-read-private";
+  res.redirect("https://accounts.spotify.com/authorize?" +
     querystring.stringify({
-      response_type: 'code',
+      response_type: "code",
       client_id: client_id,
       scope: scope,
       redirect_uri: redirect_uri,
@@ -54,7 +54,7 @@ app.get('/login', function(req, res) {
     }));
 });
 
-app.get('/callback', function(req, res) {
+app.get("/callback", function(req, res) {
 
   // application requests refresh and access tokens
   // after checking the state parameter
@@ -64,21 +64,21 @@ app.get('/callback', function(req, res) {
   var storedState = req.cookies ? req.cookies[stateKey] : null;
 
   if (state === null || state !== storedState) {
-    res.redirect('/#' +
+    res.redirect("/#" +
       querystring.stringify({
-        error: 'state_mismatch'
+        error: "state_mismatch"
       }));
   } else {
     res.clearCookie(stateKey);
     var authOptions = {
-      url: 'https://accounts.spotify.com/api/token',
+      url: "https://accounts.spotify.com/api/token",
       form: {
         code: code,
         redirect_uri: redirect_uri,
-        grant_type: 'authorization_code'
+        grant_type: "authorization_code"
       },
       headers: {
-        'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+        "Authorization": "Basic " + (new Buffer(client_id + ":" + client_secret).toString("base64"))
       },
       json: true
     };
@@ -90,39 +90,38 @@ app.get('/callback', function(req, res) {
             refresh_token = body.refresh_token;
 
         var options = {
-          url: 'https://api.spotify.com/v1/me',
-          headers: { 'Authorization': 'Bearer ' + access_token },
+          url: "https://api.spotify.com/v1/me",
+          headers: { "Authorization": "Bearer " + access_token },
           json: true
         };
 
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
-        console.log(body);
-		res.redirect('/dashboard?' +
+		res.redirect("/dashboard?" +
 			querystring.stringify({
 				token: access_token,
 				user:  body.id
 			}));
         });
       } else {
-        res.redirect('/#' +
+        res.redirect("/#" +
           querystring.stringify({
-            error: 'invalid_token'
+            error: "invalid_token"
           }));
       }
     });
   }
 });
 
-app.get('/refresh_token', function(req, res) {
+app.get("/refresh_token", function(req, res) {
 
   // requesting access token from refresh token
   var refresh_token = req.query.refresh_token;
   var authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+    url: "https://accounts.spotify.com/api/token",
+    headers: { "Authorization": "Basic " + (new Buffer(client_id + ":" + client_secret).toString("base64")) },
     form: {
-      grant_type: 'refresh_token',
+      grant_type: "refresh_token",
       refresh_token: refresh_token
     },
     json: true
@@ -132,41 +131,39 @@ app.get('/refresh_token', function(req, res) {
     if (!error && response.statusCode === 200) {
       var access_token = body.access_token;
       res.send({
-        'access_token': access_token
+        "access_token": access_token
       });
     }
   });
 });
 
-app.get('/dashboard', function(req, res, body) {
-	res.writeHead(200, {'Content-Type': 'text/html'});
+app.get("/dashboard", function(req, res, body) {
+	res.writeHead(200, {"Content-Type": "text/html"});
 	const access_token = req.query.token;
 	const user_id = req.query.user;
-	res.write('This is the dashboard!<br/>');
+	res.write("This is the dashboard!<br/>");
 	res.write("You are: "+user_id+"<br/>");
 	// request playlists
 	var options = {
           url: `https://api.spotify.com/v1/users/${user_id}/playlists`,
-          headers: { 'Authorization': 'Bearer ' + access_token },
+          headers: { "Authorization": "Bearer " + access_token },
           json: true
         };
 	request.get(options, function(error, response, body) {
 		console.log(body);
 		body.items.forEach(function(item) {
-			res.write('<a href="/generate?'+
+			res.write("<a href="/generate?"+
 			querystring.stringify({
 				token: access_token,
 				user: user_id,
 				playlist_id: item.id,
 				playlist_name: item.name
-			})+'" >');
+			})+"" >");
 			res.write(item.name+"<br/>");
 			var img_url = item.images[0].url;
-			res.write('<img width="100px" height="100px" src="'+
-						img_url+'" /><br/>');
-			//res.write(item.href+"<br/>");
+			res.write("<img width="100px" height="100px" src=""+
+						img_url+"" /><br/>");
 			res.write(item.tracks.total+" tracks<br/>");
-			//res.write(item.tracks.href+"<br/>");
 			res.write("</a>-----<br/>");
 		});
 		res.end("");
@@ -201,7 +198,7 @@ var fill_cells = function(x,y,w,h,g) {
 
 var fit_vals = function(url_freq,unitW,unitH,w,h) {//
 	const canvas = createCanvas(w,h);//
-	const ctx = canvas.getContext('2d');
+	const ctx = canvas.getContext("2d");
 	//generate grid
 	var grid = [];
 	for (i=0; i<unitH; i++) {
@@ -286,7 +283,7 @@ var get_tracks = function(entry_point,token) {
 	return new Promise(resolve => {
 			var options = {
 			  url: entry_point,
-			  headers: { 'Authorization': 'Bearer ' + token },
+			  headers: { "Authorization": "Bearer " + token },
 			  json: true
 			};
 			request.get(options, function(err, resp, body) {
@@ -304,13 +301,13 @@ var get_tracks = function(entry_point,token) {
 		}); // end of promise
 };
 
-app.get('/generate', function(req, res, body) {
-	res.writeHead(200, {'Content-Type': 'text/html'});
+app.get("/generate", function(req, res, body) {
+	res.writeHead(200, {"Content-Type": "text/html"});
 	const access_token = req.query.token;
 	const user_id = req.query.user;
 	const playlist_id = req.query.playlist_id;
 	const playlist_name = req.query.playlist_name;
-	res.write('This is the cover generator page<br/>');
+	res.write("This is the cover generator page<br/>");
 	res.write("You are: "+user_id+"<br/>");
 	res.write("You selected: "+playlist_id+"<br/>");
 	res.write("Name: "+playlist_name+"<br/>");
@@ -338,7 +335,7 @@ app.get('/generate', function(req, res, body) {
 		
 		fit_vals(url_freq,sq_side,sq_side,w,h).then(im => {
 			var imdata = im.toDataURL("image/jpeg");
-			res.write('<img src="' + imdata + '" />')
+			res.write("<img id="output" src="" + imdata + "" />")
 			console.log("finished");
 			res.end("<br/>END<br/>");
 		});
@@ -346,5 +343,5 @@ app.get('/generate', function(req, res, body) {
 });
 
 port = process.env.PORT || 8888;
-console.log('Listening on',port);
+console.log("Listening on",port);
 app.listen(port);
